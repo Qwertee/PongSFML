@@ -3,17 +3,18 @@
 #include <stdlib.h>
 // --------------
 #include <SFML/Graphics.hpp>
+#include <iostream>
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 512
 #define PADDLE_WIDTH 8
 #define PADDLE_HEIGHT 112
-#define PADDLE_VELOCITY .02
+#define PADDLE_VELOCITY .04
 
 // TODO: Check to make sure these are correct
 #define BALL_WIDTH 10
 #define BALL_HEIGHT 10
-#define BALL_VELOCITY 0.03 // still working out what this should be exactly
+#define BALL_VELOCITY 0.06 // still working out what this should be exactly
 
 // for limiting the speed at which the game runs.
 // May or may not be used at this point.
@@ -48,6 +49,28 @@ int main()
 	sf::FloatRect player2BoundingBox;
 
 	bool reset = false;
+
+	// load the font used for rendering the score
+	sf::Font font;
+	if (!font.loadFromFile("Assets\\PressStart2P.ttf"))
+	{
+		// error loading font
+		std::cout << "Error reading font file." << std::endl;
+	}
+
+	// text to hold the scores
+	sf::Text player1ScoreText, player2ScoreText;
+	player1ScoreText.setFont(font);
+	player1ScoreText.setString("0");
+	player1ScoreText.setCharacterSize(50);
+	player1ScoreText.setColor(sf::Color::White);
+	player1ScoreText.setPosition(WINDOW_WIDTH / 4, 0);
+
+	player2ScoreText.setFont(font);
+	player2ScoreText.setString("0");
+	player2ScoreText.setCharacterSize(50);
+	player2ScoreText.setColor(sf::Color::White);
+	player2ScoreText.setPosition((WINDOW_WIDTH / 4 + WINDOW_WIDTH / 2), 0);
 
 
 	// -----MainLoop----- TODO: add an update and draw method to make this prettier
@@ -114,7 +137,8 @@ int main()
 		if (ball.getPosition().x >= WINDOW_WIDTH)
 		{
 			scorePlayer1++;
-			
+			reset = true;
+			player1ScoreText.setString(std::to_string(scorePlayer1));
 		}
 
 		// Check if computer won
@@ -122,6 +146,7 @@ int main()
 		{
 			scorePlayer2++;
 			reset = true;
+			player2ScoreText.setString(std::to_string(scorePlayer2));
 		}
 
 		// draw everything
@@ -129,6 +154,8 @@ int main()
 		window.draw(ball);
 		window.draw(player1);
 		window.draw(player2);
+		window.draw(player1ScoreText);
+		window.draw(player2ScoreText);
 		window.display();
 
 
