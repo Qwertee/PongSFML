@@ -52,7 +52,7 @@ int main()
 
 	// load the font used for rendering the score
 	sf::Font font;
-	if (!font.loadFromFile("Assets\\PressStart2P.ttf"))
+	if (!font.loadFromFile("Assets/PressStart2P.ttf"))
 	{
 		// error loading font
 		std::cout << "Error reading font file." << std::endl;
