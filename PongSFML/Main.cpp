@@ -1,9 +1,6 @@
-#include <chrono>
-#include "thread"
-#include <stdlib.h>
-// --------------
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include "Player.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 512
@@ -11,14 +8,10 @@
 #define PADDLE_HEIGHT 112
 #define PADDLE_VELOCITY .04
 
-// TODO: Check to make sure these are correct
+// TODO: Experiment with these values to find the best ones.
 #define BALL_WIDTH 10
 #define BALL_HEIGHT 10
 #define BALL_VELOCITY 0.06 // still working out what this should be exactly
-
-// for limiting the speed at which the game runs.
-// May or may not be used at this point.
-using namespace std::chrono;
 
 void resetGame(sf::RectangleShape& ball);
 
@@ -35,22 +28,12 @@ int main()
 	float ballVelocityX = BALL_VELOCITY;
 	float ballVelocityY = BALL_VELOCITY;
 
-	unsigned int scorePlayer1 = 0;
-	unsigned int scorePlayer2 = 0;
-
-	// The paddles
-	sf::RectangleShape player1(sf::Vector2f(PADDLE_WIDTH, PADDLE_HEIGHT));
-	player1.setFillColor(sf::Color::White);
-	sf::RectangleShape player2(sf::Vector2f(PADDLE_WIDTH, PADDLE_HEIGHT));
-	player2.setFillColor(sf::Color::White);
-	player1.setPosition(20, 100);
-	player2.setPosition(WINDOW_WIDTH - 20 - PADDLE_WIDTH, 100);
-	sf::FloatRect player1BoundingBox;
-	sf::FloatRect player2BoundingBox;
+	Player player1 = Player(PADDLE_WIDTH, PADDLE_HEIGHT, 20, 100, WINDOW_WIDTH, false);
+	Player player2 = Player(PADDLE_WIDTH, PADDLE_HEIGHT, WINDOW_WIDTH - 20 - PADDLE_WIDTH, 100, WINDOW_WIDTH, true);
 
 	bool reset = false;
 
-	// load the font used for rendering the score
+	// load the font used for rendering the scoreText
 	sf::Font font;
 	if (!font.loadFromFile("Assets/PressStart2P.ttf"))
 	{
@@ -72,13 +55,10 @@ int main()
 	player2ScoreText.setColor(sf::Color::White);
 	player2ScoreText.setPosition((WINDOW_WIDTH / 4 + WINDOW_WIDTH / 2), 0);
 
-
 	// -----MainLoop----- TODO: add an update and draw method to make this prettier
 
-	// time_point<system_clock> t;
 	while (window.isOpen())
 	{
-		// t = system_clock::now();
 		sf::Event event;
 		while (window.pollEvent(event))
 		{
@@ -87,27 +67,8 @@ int main()
 		}
 
 		//update everything
-		// player movement
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-		{
-			player1.move(0, -PADDLE_VELOCITY);
-		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-		{
-			player1.move(0, PADDLE_VELOCITY);
-		}
-
-		// Computer paddle movement
-		if (player2.getPosition().y + (PADDLE_HEIGHT / 2) < ball.getPosition().y)
-		{
-			// move the paddle DOWN
-			player2.move(0, PADDLE_VELOCITY);
-		}
-		if (player2.getPosition().y + (PADDLE_HEIGHT / 2) > ball.getPosition().y)
-		{
-			// move the paddle UP
-			player2.move(0, -PADDLE_VELOCITY);
-		}
+		player1.update(PADDLE_VELOCITY, &ball);
+		player2.update(PADDLE_VELOCITY, &ball);
 
 		//ball
 		ball.move(ballVelocityX, ballVelocityY);
@@ -115,8 +76,6 @@ int main()
 		// Collision checks
 		// update the bounding boxes
 		ballBoundingBox = ball.getGlobalBounds();
-		player1BoundingBox = player1.getGlobalBounds();
-		player2BoundingBox = player2.getGlobalBounds();
 
 		// check if the ball has touched either the top or bottom of the display
 		if (ball.getPosition().y < 0 || ball.getPosition().y > WINDOW_HEIGHT)
@@ -126,7 +85,7 @@ int main()
 
 		// now check if any of the BoundingBoxes are intersecting and perform 
 		// the necessary action(s) if they are.
-		if (ballBoundingBox.intersects(player1BoundingBox) || ballBoundingBox.intersects(player2BoundingBox))
+		if (ballBoundingBox.intersects(player1.getBoundingBox()) || ballBoundingBox.intersects(player2.getBoundingBox()))
 		{
 			ballVelocityX = -ballVelocityX;
 		}
@@ -136,17 +95,17 @@ int main()
 		// Check if player won
 		if (ball.getPosition().x >= WINDOW_WIDTH)
 		{
-			scorePlayer1++;
+			player1.setScore(player1.getScore() + 1);
 			reset = true;
-			player1ScoreText.setString(std::to_string(scorePlayer1));
+			player1ScoreText.setString(std::to_string(player1.getScore()));
 		}
 
 		// Check if computer won
 		if (ball.getPosition().x <= 0)
 		{
-			scorePlayer2++;
+			player2.setScore(player2.getScore() + 1);
 			reset = true;
-			player2ScoreText.setString(std::to_string(scorePlayer2));
+			player2ScoreText.setString(std::to_string(player2.getScore()));
 		}
 
 		// draw everything
@@ -164,8 +123,6 @@ int main()
 			resetGame(ball);
 			reset = false;
 		}
-		// t += milliseconds(33);
-		// std::this_thread::sleep_until(t);
 	}
 
 	return 0;
