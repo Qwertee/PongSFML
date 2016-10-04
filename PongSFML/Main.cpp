@@ -6,18 +6,19 @@
 #define WINDOW_HEIGHT 512
 #define PADDLE_WIDTH 8
 #define PADDLE_HEIGHT 112
-#define PADDLE_VELOCITY 4
+#define PADDLE_VELOCITY 8
 
 // TODO: Experiment with these values to find the best ones.
 #define BALL_WIDTH 10
 #define BALL_HEIGHT 10
-#define BALL_VELOCITY 6 // still working out what this should be exactly
+#define BALL_VELOCITY 12 // still working out what this should be exactly
 
 void resetGame(sf::RectangleShape& ball);
 
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "PONG");
+	window.setFramerateLimit(30);
 
 	// the ball
 	sf::RectangleShape ball(sf::Vector2f(BALL_WIDTH, BALL_HEIGHT));
