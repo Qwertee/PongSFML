@@ -6,12 +6,12 @@
 #define WINDOW_HEIGHT 512
 #define PADDLE_WIDTH 8
 #define PADDLE_HEIGHT 112
-#define PADDLE_VELOCITY .04
+#define PADDLE_VELOCITY 4
 
 // TODO: Experiment with these values to find the best ones.
 #define BALL_WIDTH 10
 #define BALL_HEIGHT 10
-#define BALL_VELOCITY 0.06 // still working out what this should be exactly
+#define BALL_VELOCITY 6 // still working out what this should be exactly
 
 void resetGame(sf::RectangleShape& ball);
 
