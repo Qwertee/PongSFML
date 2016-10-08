@@ -1,12 +1,14 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 #include "Player.h"
 
 #define WINDOW_WIDTH 1024
 #define WINDOW_HEIGHT 512
 #define PADDLE_WIDTH 8
 #define PADDLE_HEIGHT 112
-#define PADDLE_VELOCITY 8
+#define PADDLE_VELOCITY 10
 
 // TODO: Experiment with these values to find the best ones.
 #define BALL_WIDTH 10
@@ -132,5 +134,8 @@ int main()
 void resetGame(sf::RectangleShape& ball)
 {
 	sf::sleep(sf::seconds(2));
-	ball.setPosition(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2);
+    // set RNG for determining new position of the ball
+    std::srand(std::time(0));
+    float r = std::rand() % WINDOW_HEIGHT;
+	ball.setPosition(WINDOW_WIDTH / 2, r);
 }
